@@ -1,9 +1,7 @@
 services:
   - type: web
     name: flashcards
-    runtime: python
-    buildCommand: pip install -r backend/requirements.txt && cd frontend && npm install && npm run build
-    startCommand: cd backend && gunicorn --bind 0.0.0.0:$PORT app:app
+    runtime: docker
     envVars:
       - key: SECRET_KEY
         generateValue: true
