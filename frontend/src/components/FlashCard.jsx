@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import '../css/FlashCard.css';
+import '../css/Flashcard.css';
 
 function FlashCard({ front, back, color }) {
     const [flipped, setFlipped] = useState(false);
