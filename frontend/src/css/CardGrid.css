@@ -1,0 +1,101 @@
+.cards-section { padding: 20px 28px; }
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.section-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: #1a1a2e;
+}
+
+.btn-add-card {
+    color: #fff;
+    border: none;
+    padding: 7px 16px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    background: #378ADD;
+}
+
+.btn-add-card:hover { opacity: 0.85; }
+
+.tinted-backdrop {
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+.no-cards {
+    font-size: 13px;
+    color: #888;
+    text-align: center;
+    padding: 24px;
+    grid-column: 1 / -1;
+}
+
+.flash-card {
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.7);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    border-radius: 14px;
+    padding: 14px;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.flash-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+.flash-card-label {
+    font-size: 9px;
+    font-weight: 600;
+    color: #6b7a99;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.flash-card-text {
+    font-size: 13px;
+    color: #1a1a2e;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.flash-card-divider { height: 1px; margin: 3px 0; }
+
+.flash-card-answer {
+    font-size: 12px;
+    color: #6b7a99;
+    line-height: 1.4;
+}
+
+.card-number {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    font-size: 9px;
+    color: rgba(100,120,160,0.4);
+    font-weight: 600;
+}

@@ -1,0 +1,91 @@
+.study-page {
+    min-height: 100vh;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+}
+
+.study-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.study-title { font-size: 18px; font-weight: 600; color: #1a1a2e; }
+.study-meta { font-size: 13px; color: #888; margin-top: 2px; }
+
+.exit-btn {
+    background: rgba(255,255,255,0.6);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.8);
+    color: #6b7a99; font-size: 13px; font-weight: 500;
+    padding: 7px 16px; border-radius: 999px; cursor: pointer;
+}
+
+.progress-row {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.progress-wrap {
+    flex: 1; height: 6px; border-radius: 99px;
+    background: rgba(0,0,0,0.06); overflow: hidden;
+}
+
+.progress-fill { height: 100%; border-radius: 99px; transition: width 0.3s; }
+.progress-label { font-size: 12px; color: #6b7a99; white-space: nowrap; }
+
+.score-row { display: flex; gap: 12px; }
+
+.score-pill {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 14px; border-radius: 999px;
+    font-size: 13px; font-weight: 500;
+    background: rgba(255,255,255,0.6);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.8);
+}
+
+.score-dot { width: 8px; height: 8px; border-radius: 50%; }
+.score-dot.correct { background: #4caf50; }
+.score-dot.incorrect { background: #e74c3c; }
+.score-dot.skipped { background: #f39c12; }
+
+.controls { display: flex; gap: 12px; align-items: center; }
+
+.btn-incorrect {
+    padding: 10px 24px; border-radius: 999px;
+    background: rgba(231,76,60,0.1); color: #e74c3c;
+    border: 1px solid rgba(231,76,60,0.25);
+    font-size: 13px; font-weight: 500; cursor: pointer;
+    transition: background 0.15s, transform 0.15s;
+}
+.btn-incorrect:hover { background: rgba(231,76,60,0.2); transform: translateY(-1px); }
+
+.btn-skip {
+    padding: 10px 20px; border-radius: 999px;
+    background: rgba(255,255,255,0.6); backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.8);
+    color: #6b7a99; font-size: 13px; font-weight: 500; cursor: pointer;
+}
+
+.btn-correct {
+    padding: 10px 24px; border-radius: 999px;
+    background: rgba(76,175,80,0.1); color: #4caf50;
+    border: 1px solid rgba(76,175,80,0.25);
+    font-size: 13px; font-weight: 500; cursor: pointer;
+    transition: background 0.15s, transform 0.15s;
+}
+.btn-correct:hover { background: rgba(76,175,80,0.2); transform: translateY(-1px); }
+
+.card-counter {
+    font-size: 13px; color: #6b7a99; font-weight: 500;
+    padding: 8px 16px; border-radius: 999px;
+    background: rgba(255,255,255,0.6); backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.6);
+}

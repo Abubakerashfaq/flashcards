@@ -1,0 +1,180 @@
+
+.dashboard-page {
+    background-image: url('../assets/nsulblue.jpg');
+    background-size: cover;
+    background-position: center;
+    padding: 28px;
+    height: calc(100vh - 90px);
+    overflow: hidden;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.5fr;
+    gap: 0;
+}
+
+.dashboard-left {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: 100%;
+    overflow: hidden;
+    padding-right: 8px;
+}
+
+.dashboard-right {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: 100%;
+    overflow: hidden;
+}
+
+.dashboard-title {
+    font-size: 42px;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    flex-shrink: 0;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+}
+
+.glass {
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    border-radius: 20px;
+}
+
+.quick-links {
+    display: flex;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.quick-card {
+    flex: 1;
+    padding: 14px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #1a1a2e;
+    cursor: pointer;
+    text-align: center;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.quick-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.1);
+}
+
+.card-count {
+    font-size: 24px;
+    font-weight: 600;
+    color: #378ADD;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.activity-card {
+    padding: 14px;
+
+}
+
+.activity-card h3 {
+    font-size: 10px;
+    font-weight: 600;
+    color: #6b7a99;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.activity-grid {
+    display: flex;
+    gap: 3px;
+    flex-wrap: wrap;
+}
+
+.activity-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    background: #c1fcff;
+}
+
+.activity-dot.low { background: #9ee8f7; }
+.activity-dot.mid { background: #71d2ff; }
+.activity-dot.high { background: #2563eb; }
+
+.calendar-card {
+    padding: 14px;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.calendar-card .fc {
+    flex: 1;
+    min-height: 0;
+    font-size: 10px;
+}
+
+.calendar-card .fc-toolbar {
+    margin-bottom: 6px;
+}
+
+.calendar-card .fc-toolbar-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #1a1a2e;
+}
+
+.calendar-card .fc-button {
+    font-size: 9px;
+    padding: 2px 6px;
+    background: #378ADD;
+    border-color: #378ADD;
+    border-radius: 5px;
+}
+
+.calendar-card .fc-button:hover {
+    background: #2a6db5;
+    border-color: #2a6db5;
+}
+
+.calendar-card .fc-daygrid-day-number {
+    font-size: 9px;
+    color: #6b7a99;
+    padding: 1px 3px;
+}
+
+.calendar-card {
+    padding: 14px;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.calendar-card .fc {
+    font-size: 10px;
+    height: 60px;
+}
+
+lendar-card .fc .fc-daygrid-day-frame {
+    min-height: 40px !important;
+}
+
+.calendar-card .fc-scrollgrid-sync-table,
+.calendar-card .fc-daygrid-body {
+    height: auto !important;
+}
+
+
+.lessons-list {
+    max-height: 140px; 
+    overflow-y: auto;
+}

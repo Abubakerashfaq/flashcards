@@ -1,0 +1,118 @@
+.decklist-page {
+    padding: 32px 28px;
+    text-align: left;
+}
+
+.decklist-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.decklist-title {
+    font-size: 32px;
+    font-weight: 600;
+    margin: 0 0 4px;
+    color: #111;
+}
+
+.decklist-subtitle {
+    font-size: 14px;
+    color: #888;
+    margin: 0;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-create {
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff;
+    background: #378ADD;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.15s;
+    white-space: nowrap;
+}
+
+.btn-create:hover {
+    background: #2a6db5;
+    transform: translateY(-1px);
+}
+
+.search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.decklist-search {
+    padding: 8px 36px 8px 18px;
+    border-radius: 20px;
+    border: 1.5px solid #ddd;
+    font-size: 14px;
+    outline: none;
+    width: 220px;
+    background: #fff;
+    color: #111;
+    transition: border-color 0.15s;
+}
+
+.decklist-search:focus {
+    border-color: #378ADD;
+}
+
+.search-icon {
+    position: absolute;
+    right: 12px;
+    color: #6b7a99;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+}
+
+.decklist-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 28px;
+}
+
+.tag-filter {
+    padding: 7px 18px;
+    border-radius: 20px;
+    border: 1.5px solid #ddd;
+    background: #fff;
+    font-size: 13px;
+    cursor: pointer;
+    color: #555;
+    font-weight: 500;
+    transition: all 0.15s;
+}
+
+.tag-filter:hover {
+    border-color: #378ADD;
+    color: #378ADD;
+}
+
+.tag-filter.active {
+    background: #378ADD;
+    border-color: #378ADD;
+    color: #fff;
+}
+
+.decklist-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 10px;
+}

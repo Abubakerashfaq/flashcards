@@ -1,0 +1,8 @@
+node_modules/
+backend/static/
+backend/flashcards.db
+backend/uploads/
+__pycache__/
+*.pyc
+.DS_Store
+.env

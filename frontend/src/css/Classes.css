@@ -1,0 +1,25 @@
+.classes-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 80px 150px;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 20px 90px 40px;
+    
+}
+
+.class-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+    padding-top: 100px;
+    cursor: pointer;
+}
+
+.class-meta{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 10px;
+}

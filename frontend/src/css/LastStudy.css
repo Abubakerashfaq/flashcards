@@ -1,0 +1,61 @@
+.last-study-card {
+    padding: 16px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.last-study-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+
+.last-study-card h3 {
+    font-size: 11px;
+    font-weight: 600;
+    color: #6b7a99;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+}
+
+.last-deck {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.last-deck-img {
+    width: 52px;
+    height: 52px;
+    border-radius: 10px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.last-deck-info { flex: 1; }
+
+.last-deck-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a2e;
+    margin-bottom: 3px;
+}
+
+.last-deck-meta {
+    font-size: 11px;
+    color: #888;
+    margin-bottom: 6px;
+}
+
+.progress-wrap {
+    height: 5px;
+    border-radius: 99px;
+    background: rgba(0,0,0,0.06);
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.3s;
+}
