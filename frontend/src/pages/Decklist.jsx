@@ -13,15 +13,17 @@ const DEFAULT_IMG = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/C
 // this function converts it
 function mapDeck(d) {
     return {
-        id:       d.id,
-        deckName: d.name,
-        numCards: d.card_count,
-        imgURL:   d.img_url || DEFAULT_IMG,
-        progress: 0,
-        color:    d.color || '#378ADD',
-        tags:     d.tags || [],
-        classId:  null,
-        cards:    [],
+        id:         d.id,
+        deckName:   d.name,
+        numCards:   d.card_count,
+        imgURL:     d.img_url || DEFAULT_IMG,
+        progress:   0,
+        color:      d.color || '#378ADD',
+        tags:       d.tags || [],
+        dueCount:   d.due_count || 0,
+        avgMastery: d.avg_mastery || 0,
+        classId:    null,
+        cards:      [],
     };
 }
 

@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import '../css/Navbar.css';
 import { apiLogout, apiFetch } from '../api';
 
-function NavBar({ isLoggedIn, setIsLoggedIn, username, email }) {
+function NavBar({ isLoggedIn, setIsLoggedIn, username, email, streak }) {
   const [showProfile, setShowProfile] = useState(false);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [oldPassword, setOldPassword] = useState('');
@@ -51,6 +51,16 @@ function NavBar({ isLoggedIn, setIsLoggedIn, username, email }) {
             <Link to="/classes">Classes</Link>
             <Link to="/decks">Decks</Link>
           </div>
+          {streak > 0 && (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '4px',
+              background: '#fff7ed', border: '1px solid #fed7aa',
+              borderRadius: '20px', padding: '4px 10px',
+              fontSize: '13px', fontWeight: '600', color: '#ea580c'
+            }}>
+              🔥 {streak}
+            </div>
+          )}
           <div className="navbar-right" style={{ position: 'relative' }}>
             <button
               className="admin-btn"

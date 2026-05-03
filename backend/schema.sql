@@ -2,11 +2,13 @@
 -- Converted from MySQL; column names match app.py
 
 CREATE TABLE IF NOT EXISTS user (
-    user_id    INTEGER PRIMARY KEY AUTOINCREMENT,
-    username   TEXT NOT NULL UNIQUE,
-    email      TEXT NOT NULL UNIQUE,
-    password   TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    user_id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    username          TEXT NOT NULL UNIQUE,
+    email             TEXT NOT NULL UNIQUE,
+    password          TEXT NOT NULL,
+    streak_days       INTEGER DEFAULT 0,
+    last_studied_date TEXT DEFAULT NULL,
+    created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS deck (
@@ -26,6 +28,11 @@ CREATE TABLE IF NOT EXISTS flashcard (
     front_text   TEXT NOT NULL,
     back_text    TEXT NOT NULL,
     hint         TEXT,
+    due_date     TEXT DEFAULT NULL,
+    interval_days INTEGER DEFAULT 1,
+    ease_factor  REAL DEFAULT 2.5,
+    repetitions  INTEGER DEFAULT 0,
+    mastery      INTEGER DEFAULT 0,
     created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (deck_id) REFERENCES deck(deck_id) ON DELETE CASCADE

@@ -116,3 +116,11 @@ export const apiCreateSchedule = (deck_id, date) =>
 
 export const apiDeleteSchedule = (scheduleId) =>
     apiFetch(`/api/schedule/${scheduleId}`, { method: 'DELETE' });
+
+// ── spaced repetition ─────────────────────────────────────────────────────────
+
+export const apiReviewCard = (cardId, result) =>
+    apiFetch(`/api/cards/${cardId}/review`, {
+        method: 'POST',
+        body: JSON.stringify({ result }),
+    });

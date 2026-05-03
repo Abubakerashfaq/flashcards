@@ -8,7 +8,7 @@ import { apiGetDecks, apiGetClasses } from '../api';
 
 const DEFAULT_IMG = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/1200px-Cat03.jpg';
 
-function Dashboard() {
+function Dashboard({ streak = 0 }) {
     const navigate = useNavigate();
     const [decks, setDecks] = useState([]);
     const [classes, setClasses] = useState([]);
@@ -58,6 +58,10 @@ function Dashboard() {
                     <div className="quick-card glass" onClick={() => navigate('/classes')}>
                         <span className="card-count">{classes.length}</span>
                         Classes
+                    </div>
+                    <div className="quick-card glass" style={{ cursor: 'default' }}>
+                        <span className="card-count" style={{ color: '#ea580c' }}>🔥 {streak}</span>
+                        Day Streak
                     </div>
                 </div>
                 <LastStudy deck={lastDeck} />
