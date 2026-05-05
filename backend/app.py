@@ -37,8 +37,8 @@ app.secret_key = os.environ.get('SECRET_KEY', 'flashcard_demo_key_2025')
 CORS(app, supports_credentials=True)
 # supports_credentials=True is required otherwise session cookies wont be sent
 
-DB_PATH = os.path.join(BASE_DIR, 'flashcards.db')
-# full path to our sqlite database file
+DB_PATH = '/data/flashcards.db' if os.path.isdir('/data') else os.path.join(BASE_DIR, 'flashcards.db')
+# use persistent disk on Render (/data), fall back to local for development
 
 UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
