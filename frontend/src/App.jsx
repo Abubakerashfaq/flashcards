@@ -18,6 +18,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
+  const [streak, setStreak] = useState(0);
   const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
@@ -27,6 +28,7 @@ function App() {
           setIsLoggedIn(true);
           setUsername(data.username || '');
           setEmail(data.email || '');
+          setStreak(data.streak_days || 0);
         }
       })
       .catch(() => {})
@@ -42,6 +44,7 @@ function App() {
         setIsLoggedIn={setIsLoggedIn}
         username={username}
         email={email}
+        streak={streak}
       />
       <main className="main-content">
         <Routes>
@@ -55,7 +58,7 @@ function App() {
           <Route path="/classes/:classId" element={<ClassPage />} />
           <Route path="/decks/:deckId" element={<DeckPage />} />
           <Route path="/decks/:deckId/study" element={<StudySession />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={<Dashboard streak={streak} />} />
           <Route path="/cardeditor" element={<Cardeditor />} />
           <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} setUsername={setUsername} setEmail={setEmail} />} />
           <Route path="/signup" element={<SignUp />} />

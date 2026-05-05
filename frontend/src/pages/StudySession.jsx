@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import FlashCard from '../components/FlashCard';
 import StudySummary from '../components/Summary';
 import '../css/StudySessions.css';
-import { apiGetDeck, apiGetCards, apiUpdateDeck } from '../api';
+import { apiGetDeck, apiGetCards, apiUpdateDeck, apiReviewCard } from '../api';
 
 // placeholder - same as DeckPage
 const DEFAULT_IMG = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/1200px-Cat03.jpg';
@@ -51,6 +51,9 @@ function StudySession() {
 
     const handleMark = async (result) => {
         let newCorrect = correct;
+
+        // fire SRS review — don't await, keeps UI snappy
+        apiReviewCard(cards[current].id, result).catch(() => {});
 
         if (result === 'correct') {
             newCorrect = correct + 1;

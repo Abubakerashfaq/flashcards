@@ -7,11 +7,13 @@
 -- never plain text.
 
 CREATE TABLE IF NOT EXISTS user (
-    user_id    INTEGER PRIMARY KEY AUTOINCREMENT,
-    username   TEXT NOT NULL UNIQUE,
-    email      TEXT NOT NULL UNIQUE,
-    password   TEXT NOT NULL,           -- bcrypt/pbkdf2 hash via Werkzeug
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    user_id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    username          TEXT NOT NULL UNIQUE,
+    email             TEXT NOT NULL UNIQUE,
+    password          TEXT NOT NULL,           -- bcrypt/pbkdf2 hash via Werkzeug
+    streak_days       INTEGER DEFAULT 0,       -- increments each day the user studies
+    last_studied_date TEXT DEFAULT NULL,       -- ISO date, used to calculate streak
+    created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- ── decks ─────────────────────────────────────────────────────────────────────
@@ -37,7 +39,12 @@ CREATE TABLE IF NOT EXISTS flashcard (
     deck_id      INTEGER NOT NULL,
     front_text   TEXT NOT NULL,
     back_text    TEXT NOT NULL,
-    hint         TEXT,                  -- optional hint shown before flipping
+    hint          TEXT,                  -- optional hint shown before flipping
+    due_date      TEXT DEFAULT NULL,     -- ISO date for next spaced repetition review
+    interval_days INTEGER DEFAULT 1,    -- days until next review (SM-2)
+    ease_factor   REAL DEFAULT 2.5,     -- SM-2 ease factor, min 1.3
+    repetitions   INTEGER DEFAULT 0,    -- number of correct reviews in a row
+    mastery       INTEGER DEFAULT 0,    -- 0–5, derived from repetitions
     created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (deck_id) REFERENCES deck(deck_id) ON DELETE CASCADE

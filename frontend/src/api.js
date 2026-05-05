@@ -116,3 +116,19 @@ export const apiCreateSchedule = (deck_id, date) =>
 
 export const apiDeleteSchedule = (scheduleId) =>
     apiFetch(`/api/schedule/${scheduleId}`, { method: 'DELETE' });
+
+// ── AI generation ────────────────────────────────────────────────────────────
+
+export const apiGenerateCards = (deckId, topic, count) =>
+    apiFetch(`/api/decks/${deckId}/generate`, {
+        method: 'POST',
+        body: JSON.stringify({ topic, count }),
+    });
+
+// ── spaced repetition ─────────────────────────────────────────────────────────
+
+export const apiReviewCard = (cardId, result) =>
+    apiFetch(`/api/cards/${cardId}/review`, {
+        method: 'POST',
+        body: JSON.stringify({ result }),
+    });
