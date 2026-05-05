@@ -500,25 +500,27 @@ def generate_cards(deck_id):
     )
 
     try:
-        client   = anthropic.Anthropic(api_key=os.environ.get('ANTHROPIC_API_KEY'))
-        message  = client.messages.create(
-            model='claude-haiku-4-5-20251001',
+        client  = anthropic.Anthropic(api_key=os.environ.get('ANTHROPIC_API_KEY'))
+        message = client.messages.create(
+            model='claude-3-5-haiku-20241022',
             max_tokens=1024,
             messages=[{'role': 'user', 'content': prompt}]
         )
         text = message.content[0].text.strip()
 
-        # find the JSON array even if there's surrounding text
+        # find the JSON array even if Claude adds surrounding text
         start = text.find('[')
         end   = text.rfind(']')
         if start == -1 or end == -1:
-            raise ValueError(f'No JSON array found in response: {text[:200]}')
+            return jsonify({'error': f'Unexpected AI response: {text[:300]}'}), 500
         text = text[start:end + 1]
 
         cards = json.loads(text)
         if not isinstance(cards, list):
             raise ValueError('Response is not a list')
         cards = [{'front': str(c['front']), 'back': str(c['back'])} for c in cards]
+    except json.JSONDecodeError as e:
+        return jsonify({'error': f'Could not parse AI response as JSON: {str(e)}'}), 500
     except Exception as e:
         return jsonify({'error': f'AI generation failed: {str(e)}'}), 500
 
