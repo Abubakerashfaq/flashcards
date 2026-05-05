@@ -18,7 +18,11 @@ import sqlite3  # to talk to the database
 import os       # for file paths and folder operations
 import uuid     # to generate random unique names for uploaded images
 import json
-import anthropic
+try:
+    import anthropic
+    ANTHROPIC_AVAILABLE = True
+except ImportError:
+    ANTHROPIC_AVAILABLE = False
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # full path of the folder this file is in, used to find other files
@@ -502,7 +506,7 @@ def generate_cards(deck_id):
     try:
         client  = anthropic.Anthropic(api_key=os.environ.get('ANTHROPIC_API_KEY'))
         message = client.messages.create(
-            model='claude-3-5-haiku-20241022',
+            model='claude-3-haiku-20240307',
             max_tokens=1024,
             messages=[{'role': 'user', 'content': prompt}]
         )
