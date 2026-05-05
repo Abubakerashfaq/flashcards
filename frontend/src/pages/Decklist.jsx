@@ -17,7 +17,7 @@ function mapDeck(d) {
         deckName:   d.name,
         numCards:   d.card_count,
         imgURL:     d.img_url || DEFAULT_IMG,
-        progress:   0,
+        progress:   d.progress || 0,
         color:      d.color || '#378ADD',
         tags:       d.tags || [],
         dueCount:   d.due_count || 0,

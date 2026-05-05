@@ -18,6 +18,7 @@ import sqlite3  # to talk to the database
 import os       # for file paths and folder operations
 import uuid     # to generate random unique names for uploaded images
 import json
+from datetime import date, timedelta
 try:
     import anthropic
     ANTHROPIC_AVAILABLE = True
@@ -74,6 +75,24 @@ def init_db():
     schema_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'schema.sql')
     with open(schema_path, 'r') as f:
         conn.executescript(f.read())  # run multiple SQL statements at once
+
+    # migrations for existing databases — safely ignored if columns already exist
+    migrations = [
+        "ALTER TABLE flashcard ADD COLUMN due_date TEXT DEFAULT NULL",
+        "ALTER TABLE flashcard ADD COLUMN interval_days INTEGER DEFAULT 1",
+        "ALTER TABLE flashcard ADD COLUMN ease_factor REAL DEFAULT 2.5",
+        "ALTER TABLE flashcard ADD COLUMN repetitions INTEGER DEFAULT 0",
+        "ALTER TABLE flashcard ADD COLUMN mastery INTEGER DEFAULT 0",
+        "ALTER TABLE user ADD COLUMN streak_days INTEGER DEFAULT 0",
+        "ALTER TABLE user ADD COLUMN last_studied_date TEXT DEFAULT NULL",
+        "ALTER TABLE deck ADD COLUMN progress INTEGER DEFAULT 0",
+    ]
+    for m in migrations:
+        try:
+            conn.execute(m)
+        except sqlite3.OperationalError:
+            pass
+
     conn.commit()
     conn.close()
 
@@ -179,10 +198,15 @@ def me():
     # session persists through cookies so login survives a page refresh
     if 'user_id' not in session:
         return jsonify({'logged_in': False})
+    conn = get_db()
+    user = conn.execute('SELECT streak_days FROM user WHERE user_id = ?',
+                        (session['user_id'],)).fetchone()
+    conn.close()
     return jsonify({
-        'logged_in': True,
-        'username': session['username'],
-        'email': session.get('email', '')
+        'logged_in':   True,
+        'username':    session['username'],
+        'email':       session.get('email', ''),
+        'streak_days': user['streak_days'] or 0,
     })
 
 
@@ -224,20 +248,31 @@ def get_decks():
         (session['user_id'],)
     ).fetchall()  # returns all matching rows as a list
 
+    today  = date.today().isoformat()
     result = []
     for d in decks:
         count = conn.execute(
             'SELECT COUNT(*) as cnt FROM flashcard WHERE deck_id = ?',
             (d['deck_id'],)
         ).fetchone()['cnt']
+        due_count = conn.execute(
+            'SELECT COUNT(*) as cnt FROM flashcard WHERE deck_id = ? AND (due_date IS NULL OR due_date <= ?)',
+            (d['deck_id'], today)
+        ).fetchone()['cnt']
+        avg_mastery = conn.execute(
+            'SELECT COALESCE(AVG(CAST(mastery AS FLOAT)), 0) as avg FROM flashcard WHERE deck_id = ?',
+            (d['deck_id'],)
+        ).fetchone()['avg']
         result.append({
             'id':          d['deck_id'],
             'name':        d['deck_name'],
             'description': d['description'] or '',
             'color':       d['color'] or '#2563eb',
             'img_url':     d['img_url'] if 'img_url' in d.keys() else '',
-            # img_url was added later, old databases might not have this column
             'card_count':  count,
+            'due_count':   due_count,
+            'avg_mastery': round(avg_mastery, 1),
+            'progress':    d['progress'] or 0,
             'tags':        []
         })
     conn.close()
@@ -260,10 +295,10 @@ def get_deck(deck_id):
         conn.close()
         return jsonify({'error': 'Deck not found'}), 404
 
-    count = conn.execute(
-        'SELECT COUNT(*) as cnt FROM flashcard WHERE deck_id = ?',
-        (deck_id,)
-    ).fetchone()['cnt']
+    today       = date.today().isoformat()
+    count       = conn.execute('SELECT COUNT(*) as cnt FROM flashcard WHERE deck_id = ?', (deck_id,)).fetchone()['cnt']
+    due_count   = conn.execute('SELECT COUNT(*) as cnt FROM flashcard WHERE deck_id = ? AND (due_date IS NULL OR due_date <= ?)', (deck_id, today)).fetchone()['cnt']
+    avg_mastery = conn.execute('SELECT COALESCE(AVG(CAST(mastery AS FLOAT)), 0) as avg FROM flashcard WHERE deck_id = ?', (deck_id,)).fetchone()['avg']
     conn.close()
 
     return jsonify({
@@ -273,6 +308,9 @@ def get_deck(deck_id):
         'color':       deck['color'] or '#2563eb',
         'img_url':     deck['img_url'] if 'img_url' in deck.keys() else '',
         'card_count':  count,
+        'due_count':   due_count,
+        'avg_mastery': round(avg_mastery, 1),
+        'progress':    deck['progress'] or 0,
         'tags':        []
     })
 
@@ -324,11 +362,12 @@ def update_deck(deck_id):
 
     data = request.json
     conn.execute(
-    'UPDATE deck SET deck_name=?, description=?, color=?, img_url=? WHERE deck_id=?',
+    'UPDATE deck SET deck_name=?, description=?, color=?, img_url=?, progress=? WHERE deck_id=?',
     (data.get('name', deck['deck_name']),
      data.get('description', deck['description']),
      data.get('color', deck['color']),
      data.get('img_url', deck['img_url'] if 'img_url' in deck.keys() else ''),
+     data.get('progress', deck['progress'] or 0),
      deck_id)
     )
     conn.commit()
@@ -380,10 +419,13 @@ def get_cards(deck_id):
     conn.close()
 
     return jsonify([{
-        'id':    c['flashcard_id'],
-        'front': c['front_text'],
-        'back':  c['back_text'],
-        'hint':  c['hint'] or ''
+        'id':          c['flashcard_id'],
+        'front':       c['front_text'],
+        'back':        c['back_text'],
+        'hint':        c['hint'] or '',
+        'mastery':     c['mastery'] or 0,
+        'due_date':    c['due_date'],
+        'repetitions': c['repetitions'] or 0,
     } for c in cards])
 
 
@@ -469,6 +511,61 @@ def delete_card(card_id):
     conn.commit()
     conn.close()
     return jsonify({'message': 'Card deleted'})
+
+
+# ── review route (SRS + streak) ───────────────────────────────────────────────
+
+@app.route('/api/cards/<int:card_id>/review', methods=['POST'])
+@login_required
+def review_card(card_id):
+    conn = get_db()
+    card = conn.execute('''
+        SELECT f.* FROM flashcard f
+        JOIN deck d ON f.deck_id = d.deck_id
+        WHERE f.flashcard_id = ? AND d.user_id = ?
+    ''', (card_id, session['user_id'])).fetchone()
+
+    if not card:
+        conn.close()
+        return jsonify({'error': 'Card not found'}), 404
+
+    result   = (request.json or {}).get('result', 'incorrect')
+    reps     = card['repetitions'] or 0
+    ef       = card['ease_factor'] or 2.5
+    interval = card['interval_days'] or 1
+
+    if result == 'correct':
+        new_interval = 1 if reps == 0 else (6 if reps == 1 else max(1, round(interval * ef)))
+        new_ef   = max(1.3, ef + 0.1)
+        new_reps = reps + 1
+    else:
+        new_interval = 1
+        new_ef   = max(1.3, ef - 0.2)
+        new_reps = 0
+
+    new_mastery  = min(5, new_reps)
+    new_due_date = (date.today() + timedelta(days=new_interval)).isoformat()
+
+    conn.execute(
+        'UPDATE flashcard SET repetitions=?, ease_factor=?, interval_days=?, mastery=?, due_date=? WHERE flashcard_id=?',
+        (new_reps, new_ef, new_interval, new_mastery, new_due_date, card_id)
+    )
+
+    # update streak
+    today     = date.today().isoformat()
+    yesterday = (date.today() - timedelta(days=1)).isoformat()
+    user      = conn.execute('SELECT streak_days, last_studied_date FROM user WHERE user_id = ?',
+                             (session['user_id'],)).fetchone()
+    last   = user['last_studied_date']
+    streak = user['streak_days'] or 0
+    if last != today:
+        streak = streak + 1 if last == yesterday else 1
+        conn.execute('UPDATE user SET streak_days=?, last_studied_date=? WHERE user_id=?',
+                     (streak, today, session['user_id']))
+
+    conn.commit()
+    conn.close()
+    return jsonify({'mastery': new_mastery, 'due_date': new_due_date, 'streak_days': streak})
 
 
 # ── AI generation ────────────────────────────────────────────────────────────
