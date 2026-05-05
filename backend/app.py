@@ -496,23 +496,34 @@ def generate_cards(deck_id):
 
     prompt = (
         f'Generate {count} flashcards about "{topic}". '
-        f'Return ONLY a JSON array, no other text. '
+        f'Return ONLY a raw JSON array with no markdown, no code fences, no extra text. '
         f'Each item must have exactly two keys: "front" (the question) and "back" (the answer). '
-        f'Keep answers concise, one or two sentences max.'
+        f'Example format: [{{"front":"What is X?","back":"X is Y."}}]'
     )
 
     try:
         model    = genai.GenerativeModel('gemini-2.0-flash')
         response = model.generate_content(prompt)
         text     = response.text.strip()
-        # strip markdown code fences if Gemini wraps the JSON
-        if text.startswith('```'):
-            text = text.split('```')[1]
-            if text.startswith('json'):
+
+        # strip any markdown code fences Gemini adds
+        if '```' in text:
+            parts = text.split('```')
+            # take the content inside the first fence pair
+            text = parts[1] if len(parts) > 1 else parts[0]
+            if text.lower().startswith('json'):
                 text = text[4:]
+
+        # find the JSON array even if there's surrounding text
+        start = text.find('[')
+        end   = text.rfind(']')
+        if start == -1 or end == -1:
+            raise ValueError(f'No JSON array found in response: {text[:200]}')
+        text = text[start:end + 1]
+
         cards = json.loads(text)
         if not isinstance(cards, list):
-            raise ValueError('not a list')
+            raise ValueError('Response is not a list')
         cards = [{'front': str(c['front']), 'back': str(c['back'])} for c in cards]
     except Exception as e:
         return jsonify({'error': f'AI generation failed: {str(e)}'}), 500
