@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { createPortal } from 'react-dom';
 import EditDeckModal from '../components/EditDeckModal';
 import CardEditor from '../components/CardEditor';
 import CardGrid from '../components/CardGrid';
 import PageBanner from '../components/PageBanner';
 import ProgressBar from '../components/ProgressBar';
+import AICardGenModal from '../components/AICardGenModal';
 import '../css/DeckPage.css';
 import '../css/EmptyState.css';
 import {
@@ -17,8 +19,6 @@ import {
     apiDeleteCard,
 } from '../api';
 
-// placeholder image - same one used in Decklist
-// TODO: store imgURL in the deck table
 const DEFAULT_IMG = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/1200px-Cat03.jpg';
 
 function DeckPage() {
@@ -29,10 +29,10 @@ function DeckPage() {
     const [cards, setCards] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showEditModal, setShowEditModal] = useState(false);
+    const [showAIModal, setShowAIModal] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
 
-    // load deck info and its cards when the page opens
     useEffect(() => {
         loadDeck();
     }, [deckId]);
@@ -40,7 +40,6 @@ function DeckPage() {
     const loadDeck = async () => {
         try {
             setLoading(true);
-            // fetch deck metadata and cards at the same time
             const [deckData, cardData] = await Promise.all([
                 apiGetDeck(deckId),
                 apiGetCards(deckId),
@@ -85,18 +84,11 @@ function DeckPage() {
         }
     };
 
-    // called when the user hits "Save changes" in the card editor
-    // figures out which cards were added, changed, or removed and syncs with the backend
     const handleCardsSave = async (editedCards) => {
         try {
             const originalIds = new Set(cards.map(c => c.id));
-            const editedIds   = new Set(editedCards.filter(c => originalIds.has(c.id)).map(c => c.id));
-
-            // cards that were in the original list but are gone now - delete them
             const toDelete = cards.filter(c => !editedCards.find(e => e.id === c.id));
-            // cards with a real db id that still exist - update them
             const toUpdate = editedCards.filter(c => originalIds.has(c.id));
-            // cards the user added in the editor (id is Date.now(), which is huge)
             const toCreate = editedCards.filter(c => !originalIds.has(c.id));
 
             await Promise.all([
@@ -105,12 +97,24 @@ function DeckPage() {
                 ...toCreate.map(c => apiCreateCard(deck.id, { front: c.front, back: c.back })),
             ]);
 
-            // reload cards from the backend so we have the correct ids for newly created ones
             const fresh = await apiGetCards(deck.id);
             setCards(fresh);
             setIsEditing(false);
         } catch (err) {
             alert('Could not save cards: ' + err.message);
+        }
+    };
+
+    const handleAICards = async (generatedCards) => {
+        try {
+            await Promise.all(
+                generatedCards.map(c => apiCreateCard(deck.id, { front: c.front, back: c.back }))
+            );
+            const fresh = await apiGetCards(deck.id);
+            setCards(fresh);
+            setShowAIModal(false);
+        } catch (err) {
+            alert('Could not save AI cards: ' + err.message);
         }
     };
 
@@ -132,6 +136,12 @@ function DeckPage() {
                     <>
                         <button className="banner-btn" onClick={() => setIsEditing(true)}>
                             Edit Cards
+                        </button>
+                        <button
+                            className="banner-btn"
+                            onClick={() => setShowAIModal(true)}
+                        >
+                            ✦ AI Generate
                         </button>
                         <button
                             className="banner-btn primary"
@@ -186,6 +196,15 @@ function DeckPage() {
                     onClose={() => setShowEditModal(false)}
                     onSave={handleDeckSave}
                 />
+            )}
+
+            {showAIModal && createPortal(
+                <AICardGenModal
+                    deckId={deck.id}
+                    onClose={() => setShowAIModal(false)}
+                    onAddCards={handleAICards}
+                />,
+                document.body
             )}
         </div>
     );
