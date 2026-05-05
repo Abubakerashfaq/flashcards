@@ -8,17 +8,14 @@ import ClassPage from './pages/ClassPage';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Home from './pages/Home';
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import DeckPage from './pages/DeckPage';
 import StudySession from './pages/StudySession';
 import { apiMe } from './api';
 
 function App() {
-  const location = useLocation();
-  const hideNavbar = ['/login', '/signup'].includes(location.pathname);
-
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [streak, setStreak] = useState(0);
@@ -45,16 +42,13 @@ function App() {
 
   return (
     <>
-      {!hideNavbar && (
-        <NavBar
-          isLoggedIn={isLoggedIn}
-          setIsLoggedIn={setIsLoggedIn}
-          username={username}
-          email={email}
-          streak={streak}
-          onLogout={handleLogout}
-        />
-      )}
+      <NavBar
+        isLoggedIn={isLoggedIn}
+        setIsLoggedIn={setIsLoggedIn}
+        username={username}
+        email={email}
+        streak={streak}
+      />
       <main className="main-content">
         <Routes>
           <Route
