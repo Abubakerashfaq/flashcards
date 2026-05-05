@@ -502,7 +502,7 @@ def generate_cards(deck_id):
     )
 
     try:
-        model    = genai.GenerativeModel('gemini-1.5-flash')
+        model    = genai.GenerativeModel('gemini-2.0-flash')
         response = model.generate_content(prompt)
         text     = response.text.strip()
         # strip markdown code fences if Gemini wraps the JSON
