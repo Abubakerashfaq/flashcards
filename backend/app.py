@@ -18,9 +18,7 @@ import sqlite3  # to talk to the database
 import os       # for file paths and folder operations
 import uuid     # to generate random unique names for uploaded images
 import json
-import google.generativeai as genai
-
-genai.configure(api_key=os.environ.get('GEMINI_API_KEY', ''))
+import anthropic
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # full path of the folder this file is in, used to find other files
@@ -484,7 +482,7 @@ def generate_cards(deck_id):
     if not deck:
         return jsonify({'error': 'Deck not found'}), 404
 
-    if not os.environ.get('GEMINI_API_KEY'):
+    if not os.environ.get('ANTHROPIC_API_KEY'):
         return jsonify({'error': 'AI not configured'}), 503
 
     data  = request.json or {}
@@ -502,17 +500,13 @@ def generate_cards(deck_id):
     )
 
     try:
-        model    = genai.GenerativeModel('gemini-2.0-flash')
-        response = model.generate_content(prompt)
-        text     = response.text.strip()
-
-        # strip any markdown code fences Gemini adds
-        if '```' in text:
-            parts = text.split('```')
-            # take the content inside the first fence pair
-            text = parts[1] if len(parts) > 1 else parts[0]
-            if text.lower().startswith('json'):
-                text = text[4:]
+        client   = anthropic.Anthropic(api_key=os.environ.get('ANTHROPIC_API_KEY'))
+        message  = client.messages.create(
+            model='claude-haiku-4-5-20251001',
+            max_tokens=1024,
+            messages=[{'role': 'user', 'content': prompt}]
+        )
+        text = message.content[0].text.strip()
 
         # find the JSON array even if there's surrounding text
         start = text.find('[')
